@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>INS 游戏世界 NTI 测试</title>
+  <style>
+    :root {
+      --bg1: #ffe8f3;
+      --bg2: #efe7ff;
+      --bg3: #e7fff2;
+      --card: rgba(255,255,255,.88);
+      --text: #2b2440;
+      --muted: #6e6685;
+      --pink: #ff8fc7;
+      --purple: #9d82ff;
+      --green: #8ee0af;
+      --border: #2b2440;
+      --shadow: 0 12px 0 rgba(43,36,64,.08), 0 0 0 4px var(--border);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Arial Rounded MT Bold", "Trebuchet MS", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #fff6d8 0, transparent 32%),
+        linear-gradient(135deg, var(--bg1), var(--bg2) 50%, var(--bg3));
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 14px 36px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .screen {
+      display: none;
+      background: var(--card);
+      border-radius: 28px;
+      padding: 22px 18px 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen.active { display: block; }
+
+    .pixel-tag {
+      display: inline-block;
+      background: var(--green);
+      border: 3px solid var(--border);
+      box-shadow: 4px 4px 0 rgba(43,36,64,.12);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .title {
+      font-size: 34px;
+      line-height: 1.05;
+      font-weight: 900;
+      margin: 0 0 10px;
+      letter-spacing: .5px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 0 0 18px;
+    }
+
+    .hero-box {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 10px;
+      margin: 18px 0 22px;
+    }
+
+    .hero-mini {
+      border: 3px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 4px 4px 0 rgba(43,36,64,.08);
+    }
+
+    .btn, .option {
+      width: 100%;
+      border: 3px solid var(--border);
+      border-radius: 18px;
+      background: white;
+      color: var(--text);
+      font-weight: 800;
+      box-shadow: 0 6px 0 rgba(43,36,64,.12);
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .08s ease, background .2s ease;
+    }
+
+    .btn:active, .option:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(43,36,64,.12);
+    }
+
+    .btn {
+      padding: 16px 18px;
+      font-size: 18px;
+      background: linear-gradient(135deg, var(--pink), #ffc8e6);
+    }
+
+    .progress {
+      height: 12px;
+      background: rgba(43,36,64,.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 2px solid rgba(43,36,64,.18);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, var(--purple), var(--pink), var(--green));
+      transition: width .25s ease;
+    }
+
+    .q-title {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .question {
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 900;
+      margin: 0 0 16px;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .option {
+      text-align: left;
+      padding: 16px 14px;
+      font-size: 18px;
+      background: #fff;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .option-code {
+      min-width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border);
+      font-size: 16px;
+      background: #f6f3ff;
+      font-weight: 900;
+      margin-top: 1px;
+    }
+
+    .footer-tip {
+      text-align: center;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .result-card {
+      border: 4px solid var(--border);
+      border-radius: 24px;
+      background: linear-gradient(180deg, #fff, #fff9fc);
+      padding: 18px 16px;
+      box-shadow: 0 8px 0 rgba(43,36,64,.1);
+      margin: 14px 0 16px;
+      position: relative;
+    }
+
+    .result-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 2px solid var(--border);
+      background: #fff8cf;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .result-icon {
+      font-size: 56px;
+      margin-bottom: 8px;
+    }
+
+    .result-code {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: 1.6px;
+      margin-bottom: 6px;
+    }
+
+    .result-title {
+      font-size: 32px;
+      line-height: 1.1;
+      margin: 0 0 8px;
+      font-weight: 900;
+    }
+
+    .result-desc {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 4px;
+    }
+
+    .tag {
+      padding: 7px 10px;
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      background: #f7f4ff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn.secondary {
+      background: linear-gradient(135deg, #fff, #f2f2ff);
+    }
+
+    .pixel-corners::before,
+    .pixel-corners::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: var(--border);
+      opacity: .08;
+    }
+    .pixel-corners::before { top: 10px; right: 10px; }
+    .pixel-corners::after { bottom: 10px; left: 10px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section id="start" class="screen active pixel-corners">
+      <div class="pixel-tag">INS 游戏世界 × NTI 测试</div>
+      <h1 class="title">测测你是哪位<br>像素英雄</h1>
+      <p class="subtitle">4道题，解锁你在游戏世界里的真实身份。结果将对应上影IP英雄阵营。</p>
+      <div class="hero-box">
+        <div class="hero-mini">🍑</div>
+        <div class="hero-mini">🔥</div>
+        <div class="hero-mini">🕵️</div>
+        <div class="hero-mini">🌈</div>
+      </div>
+      <button class="btn" onclick="startQuiz()">开始测试</button>
+      <div class="footer-tip">进入后每次只出现1道题</div>
+    </section>
+
+    <section id="quiz" class="screen pixel-corners">
+      <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+      <div id="qIndex" class="q-title">QUESTION 1 / 4</div>
+      <h2 id="questionText" class="question"></h2>
+      <div id="optionsWrap" class="options"></div>
+      <div class="footer-tip">根据第一直觉选择</div>
+    </section>
+
+    <section id="result" class="screen pixel-corners">
+      <div class="pixel-tag">测试完成</div>
+      <div class="result-card">
+        <div id="resultBadge" class="result-badge"></div>
+        <div id="resultIcon" class="result-icon"></div>
+        <div id="resultCode" class="result-code"></div>
+        <h2 id="resultTitle" class="result-title"></h2>
+        <p id="resultDesc" class="result-desc"></p>
+        <div id="tags" class="tags"></div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="restartQuiz()">再测一次</button>
+        <button class="btn secondary" onclick="copyResult()">复制结果</button>
+      </div>
+      <div class="footer-tip">截图分享你的像素英雄身份</div>
+    </section>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: '进入游戏世界后，你第一件事会做什么？',
+        options: [
+          { key: 'A', text: '先冲前面看看有什么任务' },
+          { key: 'B', text: '先把造型整理到位' },
+          { key: 'C', text: '先研究地图和规则' },
+          { key: 'D', text: '先找朋友一起行动' }
+        ]
+      },
+      {
+        text: '队友突然遇到危险，你会？',
+        options: [
+          { key: 'A', text: '直接冲过去帮他' },
+          { key: 'B', text: '先判断值不值得救' },
+          { key: 'C', text: '找最强的人来处理' },
+          { key: 'D', text: '召集大家一起救' }
+        ]
+      },
+      {
+        text: '游戏快输的时候，你最可能说？',
+        options: [
+          { key: 'A', text: '我来试试' },
+          { key: 'B', text: '先别急，稳一点' },
+          { key: 'C', text: '这什么情况？' },
+          { key: 'D', text: '跟我走' }
+        ]
+      },
+      {
+        text: '你平时玩游戏的状态是？',
+        options: [
+          { key: 'A', text: '不太会玩，但敢上' },
+          { key: 'B', text: '开心最重要' },
+          { key: 'C', text: '输赢必须认真' },
+          { key: 'D', text: '我一般带队赢' }
+        ]
+      }
+    ];
+
+    const resultMap = {
+      A: {
+        code: 'WKNG',
+        title: '孙悟空型',
+        badge: '战斗担当',
+        icon: '🐒',
+        desc: '你是冲得最快的那一个，遇事不躲，喜欢先上手再说。你在游戏世界里天生适合当前锋，负责破局、开路和带节奏。',
+        tags: ['冲锋型', '高能开路', '敢打敢上']
+      },
+      B: {
+        code: 'NZHA',
+        title: '哪吒型',
+        badge: '风格玩家',
+        icon: '🔥',
+        desc: '你有自己的节奏和审美，不会盲目跟风。你在游戏世界里是情绪和能量都很强的存在，出场自带存在感。',
+        tags: ['高辨识度', '情绪能量', '自带风格']
+      },
+      C: {
+        code: 'BMJC',
+        title: '警长型',
+        badge: '侦查核心',
+        icon: '🕵️',
+        desc: '你习惯先观察、再行动，能快速看懂规则和局势。你在游戏世界里是稳定的判断者，适合控场、分析和找关键线索。',
+        tags: ['理性派', '规则感强', '局势判断']
+      },
+      D: {
+        code: 'HLWD',
+        title: '葫芦娃型',
+        badge: '团队集结',
+        icon: '🌈',
+        desc: '你不是单打独斗型选手，越多人越能发挥。你在游戏世界里擅长组队、召集和拉满气氛，是团队里的连接器。',
+        tags: ['组队型', '社交驱动', '团队加成']
+      }
+    };
+
+    let current = 0;
+    let answers = [];
+
+    function startQuiz() {
+      current = 0;
+      answers = [];
+      showScreen('quiz');
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[current];
+      document.getElementById('qIndex').textContent = `QUESTION ${current + 1} / ${questions.length}`;
+      document.getElementById('questionText').textContent = q.text;
+      document.getElementById('progressBar').style.width = `${((current + 1) / questions.length) * 100}%`;
+
+      const wrap = document.getElementById('optionsWrap');
+      wrap.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.innerHTML = `<span class="option-code">${opt.key}</span><span>${opt.text}</span>`;
+        btn.onclick = () => choose(opt.key);
+        wrap.appendChild(btn);
+      });
+    }
+
+    function choose(key) {
+      answers.push(key);
+      if (current < questions.length - 1) {
+        current += 1;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      const count = { A: 0, B: 0, C: 0, D: 0 };
+      answers.forEach(a => count[a]++);
+      const topKey = Object.keys(count).sort((x, y) => count[y] - count[x])[0];
+      const result = resultMap[topKey];
+
+      document.getElementById('resultBadge').textContent = result.badge;
+      document.getElementById('resultIcon').textContent = result.icon;
+      document.getElementById('resultCode').textContent = result.code;
+      document.getElementById('resultTitle').textContent = result.title;
+      document.getElementById('resultDesc').textContent = result.desc;
+
+      const tags = document.getElementById('tags');
+      tags.innerHTML = '';
+      result.tags.forEach(tag => {
+        const el = document.createElement('div');
+        el.className = 'tag';
+        el.textContent = tag;
+        tags.appendChild(el);
+      });
+
+      showScreen('result');
+    }
+
+    function restartQuiz() {
+      showScreen('start');
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function copyResult() {
+      const title = document.getElementById('resultTitle').textContent;
+      const code = document.getElementById('resultCode').textContent;
+      const text = `我在 INS 游戏世界测出了 ${title}（${code}）！`;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('结果已复制');
+      }).catch(() => {
+        alert(text);
+      });
+    }
+  </script>
+</body>
+</html>
